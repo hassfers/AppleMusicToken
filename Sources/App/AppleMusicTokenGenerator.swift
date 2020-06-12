@@ -5,10 +5,9 @@
 //  Created by Stefan Haßferter on 05.06.20.
 //
 
-//import JWTKit
 import Vapor
 //import JWT
-import JWTKit
+import SwiftJWT
 
 class AppleMusicTokenGenerator {
     let keyId: String
@@ -21,46 +20,48 @@ class AppleMusicTokenGenerator {
         self.privatKeyPath = privatKeyPath
     }
 
-    func generateToken() {
-
-        let header = JWTHeader(kid:keyId)
+    func generateToken() -> String? {
 
         let payload = AppleMusicTokenPayload(issuer: teamId,
                                              issuedAt: Date(),
                                              expirationAt: Date().add(hours: 24 * 7))
 
-        let token = JWT(header: header, payload: payload)
+        let header = Header(kid: keyId)
+        let claims = AppleMusicTokenPayload(issuer: teamId, issuedAt: Date(), expirationAt: Date() +  24 * 3600 )
 
-        guard let key = loadPrivateKey() else { return }
+        var token = SwiftJWT.JWT(header: header, claims: claims)
 
-        let signer = try JWTSigner.
+        guard let key = loadPrivateKey() else { return nil }
+
+        return try? token.sign(using: .es256(privateKey:key))
 
     }
 
     func loadPrivateKey() -> Data? {
-        guard let url = URL(string: privatKeyPath) else { return nil }
+        
+        let url = URL(fileURLWithPath: privatKeyPath)
         return try? Data(contentsOf: url)
     }
 
 }
 
-struct AppleMusicTokenPayload: JWTPayload {
+struct AppleMusicTokenPayload: Claims {
 
-    var issuer: IssuerClaim
-    var issuedAt: IssuedAtClaim
-    var expirationAt: ExpirationClaim
+    var issuer: String
+    var issuedAt: Date
+    var expirationAt: Date
 
     init(issuer: String ,
          issuedAt: Date = Date(),
          expirationAt: Date) {
-        self.issuer = IssuerClaim(value: issuer)
-        self.issuedAt = IssuedAtClaim(value: issuedAt)
-        self.expirationAt = ExpirationClaim(value: expirationAt)
+        self.issuer = issuer
+        self.issuedAt = issuedAt
+        self.expirationAt = expirationAt
     }
 
-    func verify(using signer: JWTSigner) throws {
-        try self.expirationAt.verifyNotExpired()
-    }
+//    func verify(using signer: JWTSigner) throws {
+//        try self.expirationAt.verifyNotExpired()
+//    }
 }
 
 

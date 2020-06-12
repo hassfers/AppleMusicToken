@@ -4,17 +4,24 @@ import PackageDescription
 let package = Package(
     name: "AppleMusicToken",
     platforms: [
-       .macOS(.v10_15)
+        .macOS(.v10_15)
     ],
     dependencies: [
         // 💧 A server-side Swift web framework.
-        .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0-rc")
+        .package(url: "https://github.com/vapor/vapor.git", from: "4.8.0"),
+//        .package(url: "https://github.com/vapor/jwt.git", from: "4.0.0-rc"),
+        //        .package(url: "https://github.com/vapor/jwt-kit", from: "4.0.0-rc")
+//        .package(url: "https://github.com/IBM-Swift/Swift-JWT.git", from: "3.6.1")
+        
     ],
     targets: [
         .target(
             name: "App",
             dependencies: [
-                .product(name: "Vapor", package: "vapor")
+                .product(name: "Vapor", package: "vapor"),
+                //                .product(name: "JWTKit", package: "jwt-kit"),
+//                .product(name: "JWT", package: "jwt"),
+                //                .product(name: "SwiftJWT", package: "SwiftJWT")
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of
@@ -23,7 +30,7 @@ let package = Package(
                 .unsafeFlags(["-cross-module-optimization"], .when(configuration: .release))
             ]
         ),
-        .target(name: "Run", dependencies: [.target(name: "App")]),
+        .target(name: "Run", dependencies: [.target(name: "App"),]),
         .testTarget(name: "AppTests", dependencies: [
             .target(name: "App"),
             .product(name: "XCTVapor", package: "vapor"),
