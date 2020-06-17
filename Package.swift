@@ -9,9 +9,7 @@ let package = Package(
     dependencies: [
         // 💧 A server-side Swift web framework.
         .package(url: "https://github.com/vapor/vapor.git", from: "4.8.0"),
-//        .package(url: "https://github.com/vapor/jwt.git", from: "4.0.0-rc"),
-        //        .package(url: "https://github.com/vapor/jwt-kit", from: "4.0.0-rc")
-//        .package(url: "https://github.com/IBM-Swift/Swift-JWT.git", from: "3.6.1")
+        .package(name: "SwiftJWT", url: "https://github.com/IBM-Swift/Swift-JWT.git", from: "3.6.1")
         
     ],
     targets: [
@@ -19,9 +17,7 @@ let package = Package(
             name: "App",
             dependencies: [
                 .product(name: "Vapor", package: "vapor"),
-                //                .product(name: "JWTKit", package: "jwt-kit"),
-//                .product(name: "JWT", package: "jwt"),
-                //                .product(name: "SwiftJWT", package: "SwiftJWT")
+                .byName(name: "SwiftJWT")
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of
