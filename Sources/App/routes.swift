@@ -12,7 +12,7 @@ func routes(_ app: Application) throws {
     app.get("token") { req -> String in
         let directory = DirectoryConfiguration.detect()
         let keyName = "AuthKey_546FNHJK58.p8"
-        let keyPath = "resources"
+        let keyPath = "Sources/App/Asserts"
         
         let fileUrl = URL(fileURLWithPath: directory.workingDirectory)
             .appendingPathComponent(keyPath)
@@ -23,6 +23,7 @@ func routes(_ app: Application) throws {
         
         let gen = AppleMusicTokenGenerator(keyId: "test", teamId: "test", privatKeyPath: fileUrl.path)
         
+        print("Token generated")
         return gen.generateToken() ?? app.directory.workingDirectory
     }
 }
