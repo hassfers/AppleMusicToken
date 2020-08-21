@@ -4,7 +4,7 @@ Docker container for generating Apple Music Tokens for Apple Music API written f
 
 A MusicKey from Apple is needed to use it. Get one from your developer page => keys
 
-##Configuration with Environment Variables
+## Configuration with Environment Variables
 
 KEY_ID: the key id you get from Apple
 TEAM_ID: your team id
