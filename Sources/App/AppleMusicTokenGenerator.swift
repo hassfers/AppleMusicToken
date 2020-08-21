@@ -6,7 +6,6 @@
 //
 
 import Vapor
-//import JWT
 import SwiftJWT
 
 class AppleMusicTokenGenerator {
@@ -20,21 +19,21 @@ class AppleMusicTokenGenerator {
         self.privatKeyPath = privatKeyPath
     }
 
-    func generateToken() -> String? {
-
-        let payload = AppleMusicTokenPayload(issuer: teamId,
-                                             issuedAt: Date(),
-                                             expirationAt: Date().add(hours: 24 * 7))
-
+    func generateToken(expirationDate: Date = Date.validFor24Hours ) -> String? {
         let header = Header(kid: keyId)
-        let claims = AppleMusicTokenPayload(issuer: teamId, issuedAt: Date(), expirationAt: Date() +  24 * 3600 )
+        let claims = ClaimsStandardJWT(iss: teamId,
+                                       sub: nil,
+                                       aud: nil,
+                                       exp: expirationDate,
+                                       nbf: nil,
+                                       iat: Date(),
+                                       jti: nil)
 
         var token = SwiftJWT.JWT(header: header, claims: claims)
 
         guard let key = loadPrivateKey() else { return nil }
 
         return try? token.sign(using: .es256(privateKey:key))
-
     }
 
     func loadPrivateKey() -> Data? {
@@ -45,29 +44,23 @@ class AppleMusicTokenGenerator {
 
 }
 
-struct AppleMusicTokenPayload: Claims {
-
-    var issuer: String
-    var issuedAt: Date
-    var expirationAt: Date
-
-    init(issuer: String ,
-         issuedAt: Date = Date(),
-         expirationAt: Date) {
-        self.issuer = issuer
-        self.issuedAt = issuedAt
-        self.expirationAt = expirationAt
+extension Date {
+    func add(hours: Int) -> Date {
+        return self + TimeInterval.hour * Double(hours)
     }
 
-//    func verify(using signer: JWTSigner) throws {
-//        try self.expirationAt.verifyNotExpired()
-//    }
+
+    func add(seconds: Int) -> Date {
+        return self + TimeInterval(seconds)
+    }
+
+    static var validFor24Hours: Date {
+        return Date().add(hours: 24)
+    }
 }
 
-
-
-extension Date {
-    func add(hours:Int) -> Date {
-        return self + TimeInterval((60 * hours))
+extension TimeInterval {
+    static var hour: TimeInterval {
+        return 3600
     }
 }
